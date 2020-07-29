@@ -51,6 +51,6 @@ if (req.body.list_name === 'Work'){
 
 
 
-app.listen(3000, function (res, req) {
+app.listen(process.env.PORT || 3000, function (res, req) {
   console.log("server is running on port 3000");
 });
