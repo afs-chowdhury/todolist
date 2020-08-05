@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 
-const items = [];
+// const items = [];
 const work_items = [];
 
 mongoose.connect("mongodb://localhost:27017/todolistDB", {
@@ -81,13 +81,12 @@ app.post("/", function (req, res) {
   let item_name = req.body.newItem;
 
   const item = new Item({
-    name: item_name
-  })
+    name: item_name,
+  });
 
+  item.save();
 
-  item.save()
-
-  res.redirect("/")
+  res.redirect("/");
 
   // if (req.body.list_name === "Work") {
   //   work_items.push(item);
@@ -98,6 +97,20 @@ app.post("/", function (req, res) {
   // }
 });
 
+app.post("/delete", function (req, res) {
+  const checked_item_id = req.body.checkbox;
+  Item.findByIdAndRemove(checked_item_id, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("item has been deleted successfully");
+      res.redirect("/");
+    }
+  });
+});
+
 app.listen(process.env.PORT || 3000, function (res, req) {
   console.log("server is running on port 3000");
 });
+
+
