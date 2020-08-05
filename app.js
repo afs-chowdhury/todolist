@@ -1,11 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const my_day = require(__dirname+"/date.js")
+const mongoose = require('mongoose')
+
+
 
 const app = express();
 
 const items = [];
 const work_items = [];
+
+
+mongoose.connect("mongodb://localhost:27017/todolistDB")
 
 app.set("view engine", "ejs");
 
