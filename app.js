@@ -93,7 +93,6 @@ app.get("/:custom_list_name", function (req, res) {
   List.findOne({ name: custom_list_name }, function (err, found_list) {
     if (!err) {
       if (!found_list) {
-        console.log("Doesn't match");
         const list = new List({
           name: custom_list_name,
           items: defaultItem,
@@ -101,7 +100,6 @@ app.get("/:custom_list_name", function (req, res) {
         list.save();
         res.redirect("/" + custom_list_name);
       } else {
-        console.log(found_list.name);
         res.render("list", {
           list_title: found_list.name,
           new_items: found_list.items,
@@ -169,6 +167,14 @@ app.post("/delete", function (req, res) {
 
 // connecting app to ports
 
-app.listen(process.env.PORT || 3000, function (res, req) {
-  console.log("server is running on port 3000");
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+app.listen(port,function(req,res){
+  console.log("server has started successsfully !");
 });
+
+// app.listen(process.env.PORT || 3000, function (res, req) {
+//   console.log("server has started successfully !");
+// });
