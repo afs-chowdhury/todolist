@@ -1,23 +1,28 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const my_day = require(__dirname + "/date.js");
 const mongoose = require("mongoose");
 const _ = require("lodash");
 const app = express();
+// const my_day = require(__dirname + "/date.js");     add date functionality later on
 
-// const items = [];
-// const work_items = [];
+// connection to the mongoose database
 
-mongoose.connect("mongodb://localhost:27017/todolistDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  "mongodb+srv://afschowdhury:Thisismyatlaspassword@cluster0.lr0vq.mongodb.net/todolistDB?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+  }
+);
+
+// item schema and model initialization
 
 const item_schema = {
   name: String,
 };
 
 const Item = mongoose.model("Item", item_schema);
+
+// custom list schema and model initialization
 
 const list_schema = {
   name: String,
@@ -26,6 +31,8 @@ const list_schema = {
 
 const List = mongoose.model("List", list_schema);
 
+// default items to all the list
+
 const item1 = new Item({
   name: "Welcome to our todolist",
 });
@@ -33,10 +40,12 @@ const item2 = new Item({
   name: "Press + to add items ",
 });
 const item3 = new Item({
-  name: "<-- to delete items",
+  name: "<-- hit this to delete items",
 });
 
 const defaultItem = [item1, item2, item3];
+
+// connecting ejs to app
 
 app.set("view engine", "ejs");
 
@@ -47,6 +56,8 @@ app.use(
 );
 
 app.use(express.static("public"));
+
+// get methods for root route
 
 app.get("/", function (req, res) {
   // const day = my_day.getDate();
@@ -74,9 +85,10 @@ app.get("/", function (req, res) {
   });
 });
 
+// custom list get method
+
 app.get("/:custom_list_name", function (req, res) {
   const custom_list_name = _.capitalize(req.params.custom_list_name);
-  //console.log(custom_list_name);
 
   List.findOne({ name: custom_list_name }, function (err, found_list) {
     if (!err) {
@@ -99,15 +111,11 @@ app.get("/:custom_list_name", function (req, res) {
   });
 });
 
-// app.get("/work", function (req, res) {
-//   res.render("list", { list_title: "Work List", new_items: work_items });
-//   work_items.push(item);
-//   res.redirect("/work");
-// });
-
 app.get("/about", function (req, res) {
   res.render("contact");
 });
+
+// post methods
 
 app.post("/", function (req, res) {
   let item_name = req.body.newItem;
@@ -128,15 +136,9 @@ app.post("/", function (req, res) {
       res.redirect("/" + list_name);
     });
   }
-
-  // if (req.body.list_name === "Work") {
-  //   work_items.push(item);
-  //   res.redirect("/work");
-  // } else {
-  //   items.push(item);
-  //   res.redirect("/");
-  // }
 });
+
+// for deleting
 
 app.post("/delete", function (req, res) {
   const checked_item_id = req.body.checkbox;
@@ -164,6 +166,8 @@ app.post("/delete", function (req, res) {
     );
   }
 });
+
+// connecting app to ports
 
 app.listen(process.env.PORT || 3000, function (res, req) {
   console.log("server is running on port 3000");
